@@ -6,7 +6,7 @@ const {EOL} = require('os')
 
 
 async function main() {
-    const quality = 'lowest'
+    const quality = 'highest'
     const links = fs.readFileSync('ytlist.txt').toString().split(EOL)
 
     for (const link of links) {
@@ -62,19 +62,22 @@ async function main() {
             return
         }
 
-        const ffmpegProcess = execSync(
-            `${ffmpegPath} -i video.mp4 -i video.mp3 -c:v copy -c:a aac ${title}.mp4`
-        )
-        
-        ffmpegProcess.stdout.on('end', () => {
-            fs.unlink('video.mp3', (err) => {
-                if (err) throw err
-            })
-            fs.unlink('video.mp4', (err) => {
-                if (err) throw err
-            })
-            console.log('Merged complete!')
-        })
+        try { 
+            execSync(
+                `${ffmpegPath} -i video.mp4 -i video.mp3 -c:v copy -c:a aac ${title.replace(/[^a-zA-Z0-9]/g, '')}.mp4`
+            )
+        } catch {
+            console.log('Could not merge video and audio.')
+            return
+        }
+        console.log('Merged complete!')
+       
+        try {
+            fs.unlinkSync('video.mp3')
+            fs.unlinkSync('video.mp4')
+        } catch {
+            console.log('Unable to delete left over audio and video files after merging.')
+        }
 
     }
 }
