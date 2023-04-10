@@ -3,14 +3,19 @@ const sharp = require('sharp')
 
 const imageDirName = 'images'
 const outputDirName = 'images-output'
-fs.readdir(imageDirName, (err, files) => {
-    if (err) {
-        console.log(err)
+
+function main() {
+
+    let images
+    try {
+        images = fs.readdirSync(imageDirName)
+    } catch {
+        console.log('Unable to open image directory.')
         return
     }
 
-    for (const file of files) {
-        sharp(`${imageDirName}/${file}`)
+    for (const image of images) {
+        sharp(`${imageDirName}/${image}`)
         .jpeg({
             quality: 100,
             chromaSubsampling: '4:4:4',
@@ -19,6 +24,8 @@ fs.readdir(imageDirName, (err, files) => {
         .resize({width: 100, kernel: 'nearest'})
         .sharpen()
         .modulate({lightness: 10})
-        .toFile(`${outputDirName}/${file.split('.')[0]}.jpeg`)
+        .toFile(`${outputDirName}/${image.split('.')[0]}.jpeg`)
     }
-})
+}
+
+main()

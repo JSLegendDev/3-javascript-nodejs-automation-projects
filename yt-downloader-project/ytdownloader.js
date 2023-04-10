@@ -10,16 +10,13 @@ async function main() {
     const links = fs.readFileSync('ytlist.txt').toString().split(EOL)
 
     for (const link of links) {
-
         try {
             console.log('Downloading audio for video...')
             await new Promise((resolve, reject) => {
                 ytdl(link, {quality, filter: 'audioonly'})
                 .on('progress', (_, downloaded, total) => {
-                    const progress = Math.trunc((downloaded / total) * 100)
-                    if (progress % 10 === 0) {
-                        console.log(`${progress} % completed`)
-                    }
+                    const progress = (downloaded / total) * 100
+                    console.log(`${progress} % completed`)
                 })
                 .on('end', () => {
                     resolve()
@@ -37,10 +34,8 @@ async function main() {
             await new Promise((resolve, reject) => {
                 ytdl(link, {quality, filter: 'videoonly'})
                 .on('progress', (_, downloaded, total) => {
-                    const progress = Math.trunc((downloaded / total) * 100)
-                    if (progress % 10 === 0) {
-                        console.log(`${progress} % completed`) 
-                    }
+                    const progress = (downloaded / total) * 100
+                    console.log(`${progress} % completed`)
                 })
                 .on('end', () => {
                     resolve()
